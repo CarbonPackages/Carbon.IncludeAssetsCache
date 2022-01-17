@@ -1,0 +1,33 @@
+{
+    "name": "carbon/includeassetscache",
+    "type": "neos-carbon",
+    "description": "Extension for Carbon.InlcudeAssets: Flush cache on file update",
+    "license": "GPL-3.0-or-later",
+    "keywords": ["flow", "neos", "fusion", "helper", "carbon"],
+    "require": {
+        "carbon/includeassets": "^5.3"
+    },
+    "authors": [
+        {
+            "name": "David Spiola",
+            "role": "Developer"
+        },
+        {
+            "name": "Jon Uhlmann",
+            "email": "hello@uhlmann.pro",
+            "homepage": "https://www.uhlmann.pro",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Carbon\\IncludeAssetsCache\\": "Classes"
+        }
+    },
+    "extra": {
+        "installer-name": "Carbon.IncludeAssetsCache",
+        "neos": {
+            "package-key": "Carbon.IncludeAssetsCache"
+        }
+    }
+}
