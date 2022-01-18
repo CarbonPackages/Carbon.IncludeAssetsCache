@@ -1,4 +1,5 @@
 <?php
+
 namespace Carbon\IncludeAssetsCache;
 
 use Neos\Flow\Cache\CacheManager;
@@ -29,16 +30,21 @@ class Package extends BasePackage
                  */
                 $packageManager = $bootstrap->getEarlyInstance(PackageManager::class);
                 foreach ($packageManager->getFlowPackages() as $packageKey => $package) {
-                    $assetsPaths = [
-                        $package->getResourcesPath() . 'Private/Templates/InlineAssets',
-                        $package->getResourcesPath() . 'Public/Styles',
-                        $package->getResourcesPath() . 'Public/Scripts',
-                    ];
-                    foreach ($assetsPaths as $assetsPath) {
-                        if (is_dir($assetsPath)) {
-                            $assetsFileMonitor->monitorDirectory($assetsPath, '.*\.css');
-                            $assetsFileMonitor->monitorDirectory($assetsPath, '.*\.js');
-                        }
+                    $inlineAssets = $package->getResourcesPath() . 'Private/Templates/InlineAssets';
+                    $scriptAssets = $package->getResourcesPath() . 'Public/Scripts';
+                    $styleAssets = $package->getResourcesPath() . 'Public/Styles';
+
+                    if (is_dir($inlineAssets)) {
+                        $assetsFileMonitor->monitorDirectory($inlineAssets, '.*\.css');
+                        $assetsFileMonitor->monitorDirectory($inlineAssets, '.*\.js');
+                    }
+
+                    if (is_dir($scriptAssets)) {
+                        $assetsFileMonitor->monitorDirectory($scriptAssets, '.*\.js');
+                    }
+
+                    if (is_dir($styleAssets)) {
+                        $assetsFileMonitor->monitorDirectory($styleAssets, '.*\.css');
                     }
                 }
                 $assetsFileMonitor->detectChanges();
