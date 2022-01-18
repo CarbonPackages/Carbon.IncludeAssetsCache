@@ -1,4 +1,5 @@
 <?php
+
 namespace Carbon\IncludeAssetsCache\Command;
 
 use Carbon\IncludeAssetsCache\Service\CacheService;
@@ -18,7 +19,15 @@ class CacheCommandController extends CommandController
      */
     protected $contentCache;
 
-    public function clearIncludeAssetsCommand() {
-        \Neos\Flow\var_dump($this->contentCache->flushByTag('Carbon_Include_Assets'));
+    public function clearIncludeAssetsCommand()
+    {
+        $numberOfEntries = $this->contentCache->flushByTag('Carbon_Include_Assets');
+
+        if ($numberOfEntries === 0) {
+            $this->outputFormatted('No entries found in the include assets cache.');
+            return;
+        }
+        $entriesPlural = $numberOfEntries === 1 ? 'entry' : 'entries';
+        $this->outputFormatted('<success><b>%s</b> removed from the include assets cache.</success>', [$entriesPlural]);
     }
 }
