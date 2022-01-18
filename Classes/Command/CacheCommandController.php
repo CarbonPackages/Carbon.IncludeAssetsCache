@@ -28,6 +28,6 @@ class CacheCommandController extends CommandController
             return;
         }
         $entriesPlural = $numberOfEntries === 1 ? 'entry' : 'entries';
-        $this->outputFormatted('<success><b>%s</b> removed from the include assets cache.</success>', [$entriesPlural]);
+        $this->outputFormatted('<success><b>%s %s</b> removed from the include assets cache.</success>', [$numberOfEntries, $entriesPlural]);
     }
 }
