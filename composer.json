@@ -3,10 +3,15 @@
     "type": "neos-carbon",
     "description": "Extension for Carbon.InlcudeAssets: Flush cache on file update",
     "license": "GPL-3.0-or-later",
-    "keywords": ["flow", "neos", "fusion", "helper", "carbon"],
+    "keywords": [
+        "flow",
+        "neos",
+        "fusion",
+        "helper",
+        "carbon"
+    ],
     "require": {
-        "neos/flow": "*",
-        "carbon/includeassets": "^5.3"
+        "carbon/includeassets": "^5.4"
     },
     "authors": [
         {
@@ -30,5 +35,16 @@
         "neos": {
             "package-key": "Carbon.IncludeAssetsCache"
         }
+    },
+    "archive": {
+        "exclude": [
+            ".editorconfig",
+            ".gitattributes",
+            ".github",
+            ".gitignore",
+            "CODE_OF_CONDUCT.md",
+            "LICENSE",
+            "phpcs.xml"
+        ]
     }
 }
