@@ -1,12 +1,20 @@
-prototype(Carbon.IncludeAssets:Internal.Tag.CSS) {
+prototype(Carbon.IncludeAssets:File) {
     @context {
-        path = ${this.path}
+        file = ${this.file}
+        assetPackage = ${this.assetPackage}
+        cacheBuster = ${this.cacheBuster}
+        disableCacheBusterForPreloadAsset = ${this.disableCacheBusterForPreloadAsset}
+        assetPath = ${this.assetPath}
     }
 
     @cache {
         mode = 'cached'
         entryIdentifier {
-            hash = ${path}
+            file = ${file}
+            assetPackage = ${assetPackage}
+            cacheBuster = ${cacheBuster ? 'cacheBuster' : ''}
+            disableCacheBusterForPreloadAsset = ${disableCacheBusterForPreloadAsset ? 'disableCacheBusterForPreloadAsset' : ''}
+            assetPath = ${assetPath}
         }
         entryTags {
             1 = 'Carbon_Include_Assets'
