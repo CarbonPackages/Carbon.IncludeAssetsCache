@@ -1,4 +1,5 @@
 <?php
+
 namespace Carbon\IncludeAssetsCache;
 
 
@@ -30,10 +31,10 @@ class DynamicCssFileMonitorListener
      */
     public function flushDynamicAssetCacheOnFileChanges($fileMonitorIdentifier, array $changedFiles)
     {
-
         if ($fileMonitorIdentifier !== 'Carbon_Include_Assets_Files') {
             return;
         }
+
         if ($changedFiles === []) {
             return;
         }
