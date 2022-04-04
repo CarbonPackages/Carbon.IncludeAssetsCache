@@ -2,7 +2,6 @@
 
 namespace Carbon\IncludeAssetsCache\Command;
 
-use Carbon\IncludeAssetsCache\Service\CacheService;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Cli\CommandController;
 use Neos\Fusion\Core\Cache\ContentCache;
