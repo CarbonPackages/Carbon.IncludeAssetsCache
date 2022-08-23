@@ -11,7 +11,7 @@
         "carbon"
     ],
     "require": {
-        "carbon/includeassets": "^5.4"
+        "carbon/includeassets": "^5.4 || ^6.0"
     },
     "authors": [
         {
