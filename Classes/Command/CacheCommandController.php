@@ -18,6 +18,11 @@ class CacheCommandController extends CommandController
      */
     protected $contentCache;
 
+    /**
+     * Clear cache for include assets
+     *
+     * @return void
+     */
     public function clearIncludeAssetsCommand()
     {
         $numberOfEntries = $this->contentCache->flushByTag('Carbon_Include_Assets');
