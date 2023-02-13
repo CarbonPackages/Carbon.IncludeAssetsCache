@@ -5,8 +5,6 @@
 Extend [Carbon.IncludeAssets] with an seperate cache entry for the included files.
 If a file changes, the cache gets flushed. This is useful if you have got dynamic CSS or JavaScript files on your server.
 
-> **Currently it is only working with the default paths from Carbon.IncludeAssets**
-
 ## Installation
 
 Most of the time, you have to make small adjustments to a package (e.g., the configuration in [`Settings.yaml`]). Because of that, it is important to add the corresponding package to the composer from your theme package. Mostly this is the site package located under `Packages/Sites/`. To install it correctly go to your theme package (e.g.`Packages/Sites/Foo.Bar`) and run following command:
