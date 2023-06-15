@@ -28,6 +28,10 @@ class Package extends BasePackage
             if ($step->getIdentifier() === 'neos.flow:systemfilemonitor') {
                 $config = $this->getConfig($bootstrap);
 
+                if (!$config) {
+                    return;
+                }
+
                 // Skip if file watcher is disabled
                 if (!$config['enableFileWatcher']) {
                     return;
@@ -84,6 +88,10 @@ class Package extends BasePackage
             if ($step->getIdentifier() === 'neos.flow:cachemanagement') {
                 $config = $this->getConfig($bootstrap);
 
+                if (!$config) {
+                    return;
+                }
+
                 // Skip if a falsy value is set
                 if (!$config['enableFileWatcher']) {
                     return;
@@ -102,7 +110,7 @@ class Package extends BasePackage
      * @param Bootstrap $bootstrap
      * @return array
      */
-    protected function getConfig(Bootstrap $bootstrap): array
+    protected function getConfig(Bootstrap $bootstrap): ?array
     {
         $configurationManager = $bootstrap->getEarlyInstance(ConfigurationManager::class);
         return $configurationManager->getConfiguration(
