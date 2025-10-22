@@ -1,0 +1,13 @@
+Carbon:
+  IncludeAssetsCache:
+    enableFileMonitoring: true
+
+Neos:
+  Flow:
+    log:
+      psr3:
+        'Neos\Flow\Log\PsrLoggerFactory':
+          'Carbon.IncludeAssetsCache:Logger':
+            default:
+              options:
+                severityThreshold: '%LOG_INFO%'

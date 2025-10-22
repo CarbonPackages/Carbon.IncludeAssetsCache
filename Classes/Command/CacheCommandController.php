@@ -8,23 +8,14 @@ use Neos\Flow\Log\Utility\LogEnvironment;
 use Neos\Fusion\Core\Cache\ContentCache;
 use Psr\Log\LoggerInterface;
 
-/**
- *
- * @Flow\Scope("singleton")
- */
+#[Flow\Scope('singleton')]
 class CacheCommandController extends CommandController
 {
-    /**
-     * @Flow\Inject
-     * @var ContentCache
-     */
-    protected $contentCache;
+    #[Flow\Inject]
+    protected ContentCache $contentCache;
 
-    /**
-     * @Flow\Inject
-     * @var LoggerInterface
-     */
-    protected $logger;
+    #[Flow\Inject('Carbon.IncludeAssetsCache:Logger', false)]
+    protected LoggerInterface $logger;
 
     /**
      * Clear cache for include assets
@@ -45,7 +36,7 @@ class CacheCommandController extends CommandController
         }
         $entriesPlural = $numberOfEntries === 1 ? 'entry' : 'entries';
         $this->outputFormatted('<success><b>%s %s</b> removed from the include assets cache.</success>', [$numberOfEntries, $entriesPlural]);
-        $this->logger->debug(
+        $this->logger->info(
             sprintf(
                 '%s %s removed from the include assets cache.',
                 $numberOfEntries,

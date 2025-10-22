@@ -1,0 +1,22 @@
+Carbon:
+  IncludeAssetsCache:
+    enableFileMonitoring: false
+    monitorFiles:
+      css: true
+      js: true
+      mjs: true
+
+Neos:
+  Flow:
+    log:
+      psr3:
+        'Neos\Flow\Log\PsrLoggerFactory':
+          'Carbon.IncludeAssetsCache:Logger':
+            default:
+              class: Neos\Flow\Log\Backend\FileBackend
+              options:
+                logFileURL: '%FLOW_PATH_DATA%Logs/IncludeAssetsCache.log'
+                createParentDirectories: true
+                severityThreshold: '%LOG_DEBUG%'
+                maximumLogFileSize: 10485760
+                logFilesToKeep: 1

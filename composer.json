@@ -11,7 +11,7 @@
         "carbon"
     ],
     "require": {
-        "carbon/includeassets": "^5.4 || ^6.4 || ^7.0",
+        "carbon/includeassets": "^7.2",
         "neos/flow": "^8.3"
     },
     "authors": [

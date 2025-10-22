@@ -2,8 +2,7 @@
 
 # Carbon.IncludeAssetsCache Package for Neos CMS
 
-Extend [Carbon.IncludeAssets] with an seperate cache entry for the included files.
-If a file changes, the cache gets flushed. This is useful if you have got dynamic CSS or JavaScript files on your server.
+Adds a file monitor for cached files from [Carbon.IncludeAssets]. This is useful if you have got dynamic CSS or JavaScript files on your server.
 
 ## Installation
 

@@ -9,6 +9,7 @@ use Neos\Flow\Core\Bootstrap;
 use Neos\Flow\Monitor\FileMonitor;
 use Neos\Flow\Package\Package as BasePackage;
 use Neos\Flow\Package\PackageManager;
+use Neos\Utility\Files;
 
 class Package extends BasePackage
 {
@@ -19,21 +20,39 @@ class Package extends BasePackage
      * @param Bootstrap $bootstrap The current bootstrap
      * @return void
      */
-
     public function boot(Bootstrap $bootstrap)
     {
         $dispatcher = $bootstrap->getSignalSlotDispatcher();
         $dispatcher->connect(Sequence::class, 'afterInvokeStep', function ($step) use ($bootstrap, $dispatcher) {
-
             if ($step->getIdentifier() === 'neos.flow:systemfilemonitor') {
-                $config = $this->getConfig($bootstrap);
+                $configFromSettings = $this->getConfig($bootstrap);
+                $packageConfig = $configFromSettings['Packages'] ?? null;
+                $defaultPathConfig = $configFromSettings['Default']['Path']['Cached'] ?? null;
+                $enabled = $configFromSettings['Cache']['enableFileMonitoring'] ?? false;
+                $monitorFileExtensions = $configFromSettings['Cache']['monitorFiles'] ?? [];
+                $monitorFileExtensions = array_keys(array_filter($monitorFileExtensions));
 
-                if (!$config) {
+                if (!$enabled || empty($packageConfig) || empty($defaultPathConfig) || !is_array($defaultPathConfig)) {
                     return;
                 }
 
-                // Skip if file watcher is disabled
-                if (!$config['enableFileWatcher']) {
+                $packagesConfigToWatch = [];
+                // Gather all config who has Cached set to true
+                foreach ($packageConfig as $key => $config) {
+                    $cached = $config['Cached'] ?? false;
+                    $packageName = $config['Package'] ?? null;
+                    if ($cached === true && !empty($packageName)) {
+                        if (isset($packagesConfigToWatch[$packageName])) {
+                            // Merge with existing config
+                            $packagesConfigToWatch[$packageName] = array_merge_recursive($packagesConfigToWatch[$packageName], $config);
+                            continue;
+                        }
+                        $packagesConfigToWatch[$packageName] = $config;
+                    }
+                }
+
+                // No packages to watch
+                if (empty($packagesConfigToWatch)) {
                     return;
                 }
 
@@ -43,41 +62,33 @@ class Package extends BasePackage
                  */
                 $packageManager = $bootstrap->getEarlyInstance(PackageManager::class);
 
-                $restrictToPackages = $config['restrictToPackages'];
-                // Make sure we have an array
-                if (is_string($restrictToPackages)) {
-                    $restrictToPackages = [$restrictToPackages];
-                }
-
+                $restrictToPackages = array_keys($packagesConfigToWatch);
                 foreach ($packageManager->getFlowPackages() as $packageKey => $package) {
                     $resourcesPath = $package->getResourcesPath();
 
                     // Skip if package is not in the list of packages to watch
-                    if ($restrictToPackages && !in_array($packageKey, $restrictToPackages)) {
+                    if (!in_array($packageKey, $restrictToPackages)) {
                         continue;
                     }
 
-                    foreach ($config['directories'] as $filetype => $directory) {
+                    // Get the path configuration for this package
+                    $customPathConfig = $packagesConfigToWatch[$packageKey]['Path']['Cached'] ?? [];
+                    $pathConfig = array_merge_recursive($defaultPathConfig, $customPathConfig);
 
-                        // Skip if a falsy value is set
-                        if (!$directory) {
+                    // There are two types of path configurations: Inline and File
+                    foreach ($pathConfig as $directory) {
+                        $directory = trim($directory, '/');
+                        $path = Files::getNormalizedPath(Files::getUnixStylePath($resourcesPath . $directory));
+                        if (!is_dir($path)) {
+                            continue;
+                        }
+                        if (empty($monitorFileExtensions)) {
+                            $assetsFileMonitor->monitorDirectory($path);
                             continue;
                         }
 
-                        // Make sure we have an array
-                        if (!is_array($directory)) {
-                            $directory = [$directory];
-                        }
-
-                        foreach ($directory as $folder) {
-                            // Skip if a falsy value is set
-                            if (!$folder) {
-                                continue;
-                            }
-                            $path = $resourcesPath . $folder;
-                            if (is_dir($path)) {
-                                $assetsFileMonitor->monitorDirectory($path, $filetype == 'ALL' ? null : sprintf('.*\.%s$', $filetype));
-                            }
+                        foreach ($monitorFileExtensions as $extension) {
+                            $assetsFileMonitor->monitorDirectory($path, sprintf('.*\.%s$', $extension));
                         }
                     }
                 }
@@ -86,19 +97,8 @@ class Package extends BasePackage
             }
 
             if ($step->getIdentifier() === 'neos.flow:cachemanagement') {
-                $config = $this->getConfig($bootstrap);
-
-                if (!$config) {
-                    return;
-                }
-
-                // Skip if a falsy value is set
-                if (!$config['enableFileWatcher']) {
-                    return;
-                }
-
                 $cacheManager = $bootstrap->getEarlyInstance(CacheManager::class);
-                $listener = new DynamicCssFileMonitorListener($cacheManager);
+                $listener = new DynamicFileMonitorListener($cacheManager);
                 $dispatcher->connect(FileMonitor::class, 'filesHaveChanged', $listener, 'flushDynamicAssetCacheOnFileChanges');
             }
         });
@@ -113,9 +113,19 @@ class Package extends BasePackage
     protected function getConfig(Bootstrap $bootstrap): ?array
     {
         $configurationManager = $bootstrap->getEarlyInstance(ConfigurationManager::class);
-        return $configurationManager->getConfiguration(
-            ConfigurationManager::CONFIGURATION_TYPE_SETTINGS,
-            'Carbon.IncludeAssetsCache'
-        );
+        return [
+            'Packages' => $configurationManager->getConfiguration(
+                ConfigurationManager::CONFIGURATION_TYPE_SETTINGS,
+                'Carbon.IncludeAssets.Packages'
+            ),
+            'Default' => $configurationManager->getConfiguration(
+                ConfigurationManager::CONFIGURATION_TYPE_SETTINGS,
+                'Carbon.IncludeAssets.Default'
+            ),
+            'Cache' => $configurationManager->getConfiguration(
+                ConfigurationManager::CONFIGURATION_TYPE_SETTINGS,
+                'Carbon.IncludeAssetsCache'
+            ),
+        ];
     }
 }

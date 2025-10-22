@@ -5,10 +5,8 @@ namespace Carbon\IncludeAssetsCache;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Cache\CacheManager;
 
-/**
- * @Flow\Proxy(false)
- */
-class DynamicCssFileMonitorListener
+#[Flow\Proxy(false)]
+class DynamicFileMonitorListener
 {
     /**
      * @var CacheManager
